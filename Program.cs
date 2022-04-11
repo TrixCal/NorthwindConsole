@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using NorthwindConsole.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace NorthwindConsole
 {
@@ -20,6 +21,7 @@ namespace NorthwindConsole
                 do{
                     Console.WriteLine("1) Display Categories");
                     Console.WriteLine("2) Add Category");
+                    Console.WriteLine("3) Display Category and related products");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
                     Console.Clear();
@@ -63,6 +65,25 @@ namespace NorthwindConsole
                             foreach(var result in results){
                                 logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
                             }
+                        }
+                    }
+                    else if(choice == "3"){
+                        var db = new NWConsole_48_TELContext();
+                        var query = db.Categories.OrderBy(p => p.CategoryId);
+
+                        Console.WriteLine("Select the category whose products you want to display: ");
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        foreach(var item in query){
+                            Console.WriteLine($"{item.CategoryId}) {item.CategoryName}");
+                        }
+                        Console.ForegroundColor = ConsoleColor.White;
+                        int id = int.Parse(Console.ReadLine());
+                        Console.Clear();
+                        logger.Info($"CategoryId {id} selected");
+                        Category category = db.Categories.Include("Products").FirstOrDefault(c => c.CategoryId == id);
+                        Console.WriteLine($"{category.CategoryName} - {category.Description}");
+                        foreach(Product p in category.Products){
+                            Console.WriteLine(p.ProductName);
                         }
                     }
                     Console.WriteLine();
