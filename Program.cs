@@ -34,6 +34,14 @@ namespace NorthwindConsole
                         }
                         Console.ForegroundColor = ConsoleColor.White;
                     }
+                    else if(choice == "2"){
+                        Category category = new Category();
+                        Console.WriteLine("Enter Category Name: ");
+                        category.CategoryName = Console.ReadLine();
+                        Console.WriteLine("Enter the Category Description: ");
+                        category.Description = Console.ReadLine();
+                        //save cateogry to db
+                    }
                     Console.WriteLine();
 
                 } while(choice.ToLower() != "q");
