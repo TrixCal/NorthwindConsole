@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.ComponentModel.DataAnnotations;
 #nullable disable
 
 namespace NorthwindConsole.Model
@@ -13,6 +13,7 @@ namespace NorthwindConsole.Model
         }
 
         public int CategoryId { get; set; }
+        [Required]
         public string CategoryName { get; set; }
         public string Description { get; set; }
 

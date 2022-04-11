@@ -2,6 +2,8 @@
 using NLog.Web;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using NorthwindConsole.Model;
 
 namespace NorthwindConsole
@@ -40,7 +42,20 @@ namespace NorthwindConsole
                         category.CategoryName = Console.ReadLine();
                         Console.WriteLine("Enter the Category Description: ");
                         category.Description = Console.ReadLine();
-                        //save cateogry to db
+                        
+                        ValidationContext context = new ValidationContext(category, null, null);
+                        List<ValidationResult> results = new List<ValidationResult>();
+
+                        var isValid = Validator.TryValidateObject(category, context, results, true);
+                        if(isValid){
+                            logger.Info("Validation passed");
+                            //save category to db
+                        }
+                        else{
+                            foreach(var result in results){
+                                logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
+                            }
+                        }
                     }
                     Console.WriteLine();
 
