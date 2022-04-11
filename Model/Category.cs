@@ -13,7 +13,7 @@ namespace NorthwindConsole.Model
         }
 
         public int CategoryId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Name is missing")]
         public string CategoryName { get; set; }
         public string Description { get; set; }
 

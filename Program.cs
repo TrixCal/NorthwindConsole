@@ -48,10 +48,18 @@ namespace NorthwindConsole
 
                         var isValid = Validator.TryValidateObject(category, context, results, true);
                         if(isValid){
-                            logger.Info("Validation passed");
-                            //save category to db
+                            var db = new NWConsole_48_TELContext();
+                            //check unique name
+                            if(db.Categories.Any(c => c.CategoryName == category.CategoryName)){
+                                //generate validation error
+                                isValid = false;
+                                results.Add(new ValidationResult("Name exists", new string[] { "CategoryName"}));
+                            }
+                            else{
+                                logger.Info("Validation passed");
+                            }
                         }
-                        else{
+                        if(!isValid){
                             foreach(var result in results){
                                 logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
                             }
