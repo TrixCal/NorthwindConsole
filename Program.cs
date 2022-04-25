@@ -15,7 +15,7 @@ namespace NorthwindConsole
         static void Main(string[] args)
         {
             logger.Info("Program started");
-
+            var db = new NWConsole_48_TELContext();
             try{
                 string choice;
                 do{
@@ -27,7 +27,6 @@ namespace NorthwindConsole
                     Console.Clear();
                     logger.Info($"Option {choice} selected");
                     if(choice == "1"){
-                        var db = new NWConsole_48_TELContext();
                         var query = db.Categories.OrderBy(p => p.CategoryName);
 
                         Console.ForegroundColor = ConsoleColor.Green;
@@ -50,7 +49,6 @@ namespace NorthwindConsole
 
                         var isValid = Validator.TryValidateObject(category, context, results, true);
                         if(isValid){
-                            var db = new NWConsole_48_TELContext();
                             //check unique name
                             if(db.Categories.Any(c => c.CategoryName == category.CategoryName)){
                                 //generate validation error
@@ -59,6 +57,7 @@ namespace NorthwindConsole
                             }
                             else{
                                 logger.Info("Validation passed");
+                                db.AddCategory(category);
                             }
                         }
                         if(!isValid){
@@ -68,7 +67,6 @@ namespace NorthwindConsole
                         }
                     }
                     else if(choice == "3"){
-                        var db = new NWConsole_48_TELContext();
                         var query = db.Categories.OrderBy(p => p.CategoryId);
 
                         Console.WriteLine("Select the category whose products you want to display: ");
