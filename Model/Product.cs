@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 #nullable disable
 
@@ -13,9 +14,13 @@ namespace NorthwindConsole.Model
         }
 
         public int ProductId { get; set; }
+        [Required(ErrorMessage = "ProductName missing")]
         public string ProductName { get; set; }
+        [Required(ErrorMessage = "SupplierId missing")]
         public int? SupplierId { get; set; }
+        [Required(ErrorMessage = "CategoryId misssing")]
         public int? CategoryId { get; set; }
+        [Required(ErrorMessage = "QuantityPerUnit missing")]
         public string QuantityPerUnit { get; set; }
         public decimal? UnitPrice { get; set; }
         public short? UnitsInStock { get; set; }
