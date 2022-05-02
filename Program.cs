@@ -56,21 +56,29 @@ namespace NorthwindConsole
 
                         Console.WriteLine("Select the category whose products you want to display: ");
                         Category category = GetCategory(db);
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        logger.Info($"CategoryId {category.CategoryId} selected");
-                        category = db.Categories.Include("Products").FirstOrDefault(c => c.CategoryId == category.CategoryId);
-                        logger.Info($"{category.Products.Count()} items returned");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($"{category.CategoryName} - {category.Description}");
-                        Console.ForegroundColor = ConsoleColor.DarkCyan;
-                        foreach(Product p in category.Products){
-                            Console.WriteLine(p.ProductName);
+                        if(category != null){
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            logger.Info($"CategoryId {category.CategoryId} selected");
+                            category = db.Categories.Include("Products").FirstOrDefault(c => c.CategoryId == category.CategoryId);
+                            logger.Info($"{category.Products.Count()} items returned");
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.WriteLine($"{category.CategoryName} - {category.Description}");
+                            Console.ForegroundColor = ConsoleColor.DarkCyan;
+                            foreach(Product p in category.Products){
+                                Console.WriteLine(p.ProductName);
+                            }
+                            Console.ForegroundColor = ConsoleColor.White;
                         }
-                        Console.ForegroundColor = ConsoleColor.White;
                     }
                     else if(choice == "4"){
                         // add product
-                        
+                        var db = new NWConsole_48_TELContext();
+
+                        Product product = InputProduct(db);
+                        if(product != null){
+                            db.AddProduct(product);
+                            logger.Info($"Product added - {product.ProductName}");
+                        }
                     }
                     Console.WriteLine();
                 } while(choice.ToLower() != "q");
@@ -147,6 +155,71 @@ namespace NorthwindConsole
                     return supplier;
             }
             logger.Error("Invalid SupplierId");
+            return null;
+        }
+
+        public static Product InputProduct(NWConsole_48_TELContext db){
+            Product product = new Product();
+            Console.WriteLine("Enter the Product Name: ");
+            product.ProductName = Console.ReadLine();
+            //generate QuantityPerUnit
+            Console.WriteLine("Enter Quantity Per Unit Description: ");
+            product.QuantityPerUnit = Console.ReadLine();
+            //generate UnitPrice
+            Console.WriteLine("Enter Unit Price:($)");
+            if(decimal.TryParse(Console.ReadLine(), out decimal UnitPrice)){
+                product.UnitPrice = UnitPrice;
+            }
+            else{
+                logger.Error("Invalid Price");
+                return null;
+            }
+            //genereate UnitsInStock
+            Console.WriteLine("Enter initial Inventory: ");
+            if(short.TryParse(Console.ReadLine(), out short UnitsInStock)){
+                product.UnitsInStock = UnitsInStock;
+            }
+            else{
+                logger.Error("Invalid Stock");
+                return null;
+            }
+
+            ValidationContext context = new ValidationContext(product, null, null);
+            List<ValidationResult> results = new List<ValidationResult>();
+
+            var isValid = Validator.TryValidateObject(product, context, results, true);
+            if(isValid){
+                if(db.Products.Any(p => p.ProductName == product.ProductName)){
+                    //generate validation error
+                    isValid = false;
+                    results.Add(new ValidationResult("Name exists", new string[] { "ProductName"}));
+                }
+                else{
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    logger.Info("Validation passed");
+                    Console.ForegroundColor = ConsoleColor.White;
+        
+                    //generate category
+                    Category category = GetCategory(db);
+                    if(category != null){
+                        //generate supplier
+                        Supplier supplier = GetSupplier(db);
+                        if(supplier != null){
+                            //assign category and supplier values
+                            product.Category = category;
+                            product.CategoryId = category.CategoryId;
+                            product.Supplier = supplier;
+                            product.SupplierId = supplier.SupplierId;
+                            return product;
+                        }
+                    }
+                }
+            }
+            if(!isValid){
+                foreach(var result in results){
+                    logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
+                }
+            }
             return null;
         }
     }
