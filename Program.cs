@@ -28,7 +28,9 @@ namespace NorthwindConsole
                     Console.WriteLine("6) Edit Product");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
                     logger.Info($"Option {choice} selected");
+                    Console.ForegroundColor = ConsoleColor.White;
                     if (choice == "1")
                     {
                         // display categories
@@ -53,7 +55,9 @@ namespace NorthwindConsole
                         if (category != null)
                         {
                             db.AddCategory(category);
+                            Console.ForegroundColor = ConsoleColor.Green;
                             logger.Info($"Category added - {category.CategoryName}");
+                            Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
                     else if (choice == "3")
@@ -66,12 +70,11 @@ namespace NorthwindConsole
                         if (category != null)
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
-                            logger.Info($"CategoryId {category.CategoryId} selected");
                             category = db.Categories.Include("Products").FirstOrDefault(c => c.CategoryId == category.CategoryId);
                             logger.Info($"{category.Products.Count()} items returned");
                             Console.ForegroundColor = ConsoleColor.White;
                             Console.WriteLine($"{category.CategoryName} - {category.Description}");
-                            Console.ForegroundColor = ConsoleColor.DarkCyan;
+                            Console.ForegroundColor = ConsoleColor.Magenta;
                             foreach (Product p in category.Products)
                             {
                                 Console.WriteLine(p.ProductName);
@@ -102,7 +105,9 @@ namespace NorthwindConsole
                         if (product != null)
                         {
                             db.AddProduct(product);
+                            Console.ForegroundColor = ConsoleColor.Green;
                             logger.Info($"Product added - {product.ProductName}");
+                            Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
                     else if (choice == "6")
@@ -119,9 +124,12 @@ namespace NorthwindConsole
                                 Console.ForegroundColor = ConsoleColor.DarkGray;
                                 Console.WriteLine(product);
                                 Console.ForegroundColor = ConsoleColor.White;
-                                Console.WriteLine("What would you like to edit?(Name, Category, Supplier, Price, QuantityPerUnit, Stock, Ordered, RestockLevel, Discontinue)");
+                                Console.WriteLine("What would you like to edit?(Name, Category, Supplier, Price, QuantityPerUnit, Stock, Ordered, Reorder, Discontinue)");
                                 Console.WriteLine("Type \'q\' to stop modifying");
                                 edit = Console.ReadLine().ToLower();
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                logger.Info($"Edit option: {edit} selected");
+                                Console.ForegroundColor = ConsoleColor.White;
                                 if(edit == "name")
                                 {
                                     // change name
@@ -194,7 +202,7 @@ namespace NorthwindConsole
                                     else
                                         logger.Error("Incorrect data type");
                                 }
-                                else if(edit == "restocklevel")
+                                else if(edit == "reorder")
                                 {
                                     // change restock level
                                     Console.WriteLine($"Current Reorder Level: {product.ReorderLevel}");
@@ -219,7 +227,9 @@ namespace NorthwindConsole
                             }
                             while(edit != "q");
                             db.EditProduct(product);
-                            logger.Info($"{product.ProductName} - id:{product.ProductId}; modified");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            logger.Info($"{product.ProductName} Id:{product.ProductId} modified");
+                            Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
                     Console.WriteLine();
@@ -227,10 +237,13 @@ namespace NorthwindConsole
             }
             catch (Exception ex)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 logger.Error(ex.Message);
+                Console.ForegroundColor = ConsoleColor.White;
             }
-
+            Console.ForegroundColor = ConsoleColor.Green;
             logger.Info("Program ended");
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         public static Category GetCategory(NWConsole_48_TELContext db)
@@ -247,9 +260,16 @@ namespace NorthwindConsole
             {
                 Category category = db.Categories.FirstOrDefault(c => c.CategoryId == CategoryId);
                 if (category != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    logger.Info($"Category Id: {CategoryId} selected");
+                    Console.ForegroundColor = ConsoleColor.White;
                     return category;
+                }
             }
+            Console.ForegroundColor = ConsoleColor.Red;
             logger.Error("Invalid CategoryId");
+            Console.ForegroundColor = ConsoleColor.White;
             return null;
         }
 
@@ -285,7 +305,9 @@ namespace NorthwindConsole
             {
                 foreach (var result in results)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
             }
             return null;
@@ -305,9 +327,16 @@ namespace NorthwindConsole
             {
                 Supplier supplier = db.Suppliers.FirstOrDefault(s => s.SupplierId == SupplierId);
                 if (supplier != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    logger.Info($"Supplier Id: {SupplierId} selected");
+                    Console.ForegroundColor = ConsoleColor.White;
                     return supplier;
+                }
             }
+            Console.ForegroundColor = ConsoleColor.Red;
             logger.Error("Invalid SupplierId");
+            Console.ForegroundColor = ConsoleColor.White;
             return null;
         }
 
@@ -318,12 +347,11 @@ namespace NorthwindConsole
             if (category != null)
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                logger.Info($"CategoryId {category.CategoryId} selected");
                 category = db.Categories.Include("Products").FirstOrDefault(c => c.CategoryId == category.CategoryId);
                 logger.Info($"{category.Products.Count()} items returned");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($"{category.CategoryName}");
-                Console.ForegroundColor = ConsoleColor.DarkCyan;
+                Console.ForegroundColor = ConsoleColor.Magenta;
                 // print all products from selected category
                 foreach (Product p in category.Products)
                 {
@@ -335,9 +363,14 @@ namespace NorthwindConsole
                 {
                     Product product = db.Products.Where(p => p.CategoryId == category.CategoryId).Include("Supplier").FirstOrDefault(p => p.ProductId == ProductId);
                     if (product != null)
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        logger.Info($"Product Id: {ProductId} selected");
+                        Console.ForegroundColor = ConsoleColor.White;
                         return product;
                 }
+                Console.ForegroundColor = ConsoleColor.Red;
                 logger.Error("Invalid ProductId");
+                Console.ForegroundColor = ConsoleColor.White;
             }
             return null;
         }
@@ -403,7 +436,9 @@ namespace NorthwindConsole
             {
                 foreach (var result in results)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
             }
             return null;
