@@ -120,7 +120,8 @@ namespace NorthwindConsole
                             Console.ForegroundColor = ConsoleColor.Magenta;
                             foreach (Product p in category.Products)
                             {
-                                Console.WriteLine(p.ProductName);
+                                if(!p.Discontinued)
+                                    Console.WriteLine(p.ProductName);
                             }
                             Console.ForegroundColor = ConsoleColor.White;
                         }
