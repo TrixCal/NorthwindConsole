@@ -22,10 +22,11 @@ namespace NorthwindConsole
                 {
                     Console.WriteLine("1) Display Categories");
                     Console.WriteLine("2) Add Category");
-                    Console.WriteLine("3) Display Category and related products");
-                    Console.WriteLine("4) Display Specific Product");
-                    Console.WriteLine("5) Add Product");
-                    Console.WriteLine("6) Edit Product");
+                    Console.WriteLine("3) Edit Category");
+                    Console.WriteLine("4) Display Category and related products");
+                    Console.WriteLine("5) Display Specific Product");
+                    Console.WriteLine("6) Add Product");
+                    Console.WriteLine("7) Edit Product");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -62,6 +63,48 @@ namespace NorthwindConsole
                     }
                     else if (choice == "3")
                     {
+                        // edit category
+                        var db = new NWConsole_48_TELContext();
+
+                        Category category = GetCategory(db);
+                        if(category != null)
+                        {
+                            string edit = "";
+                            do
+                            {
+                                Console.ForegroundColor = ConsoleColor.DarkGray;
+                                Console.WriteLine(category);
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.WriteLine("What would you like to edit?(Name, Description)");
+                                Console.WriteLine("Type \'q\' to stop modifying");
+                                edit = Console.ReadLine().ToLower();
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                logger.Info($"Edit option: {edit} selected");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                if(edit == "name")
+                                {
+                                    // change name
+                                    Console.WriteLine($"Current Name: {category.CategoryName}");
+                                    Console.Write("Change to: ");
+                                    category.CategoryName = Console.ReadLine();
+                                }
+                                else if(edit == "description")
+                                {
+                                    // change description
+                                    Console.WriteLine($"Current Description: {category.Description}");
+                                    Console.Write("Change to: ");
+                                    category.Description = Console.ReadLine();
+                                }
+                            }
+                            while(edit != "q");
+                            db.EditCategory(category);
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            logger.Info($"{category.CategoryName} Id:{category.CategoryId} modified");
+                            Console.ForegroundColor = ConsoleColor.White;
+                        }
+                    }
+                    else if (choice == "4")
+                    {
                         // display products in category
                         var db = new NWConsole_48_TELContext();
 
@@ -82,7 +125,7 @@ namespace NorthwindConsole
                             Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
-                    else if (choice == "4")
+                    else if (choice == "5")
                     {
                         // display specific product
                         var db = new NWConsole_48_TELContext();
@@ -96,7 +139,7 @@ namespace NorthwindConsole
                             Console.ReadKey();
                         }
                     }
-                    else if (choice == "5")
+                    else if (choice == "6")
                     {
                         // add product
                         var db = new NWConsole_48_TELContext();
@@ -110,7 +153,7 @@ namespace NorthwindConsole
                             Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
-                    else if (choice == "6")
+                    else if (choice == "7")
                     {
                         // edit product
                         var db = new NWConsole_48_TELContext();
