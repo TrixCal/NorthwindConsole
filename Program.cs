@@ -23,11 +23,11 @@ namespace NorthwindConsole
                     Console.WriteLine("1) Display Categories");
                     Console.WriteLine("2) Add Category");
                     Console.WriteLine("3) Display Category and related products");
-                    Console.WriteLine("4) Add Product");
-                    Console.WriteLine("5) Edit Product");
+                    Console.WriteLine("4) Display Specific Product");
+                    Console.WriteLine("5) Add Product");
+                    Console.WriteLine("6) Edit Product");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
-                    Console.Clear();
                     logger.Info($"Option {choice} selected");
                     if (choice == "1")
                     {
@@ -81,6 +81,20 @@ namespace NorthwindConsole
                     }
                     else if (choice == "4")
                     {
+                        // display specific product
+                        var db = new NWConsole_48_TELContext();
+
+                        Product product = GetProduct(db);
+                        if(product != null)
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.WriteLine(product);
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.ReadKey();
+                        }
+                    }
+                    else if (choice == "5")
+                    {
                         // add product
                         var db = new NWConsole_48_TELContext();
 
@@ -91,7 +105,7 @@ namespace NorthwindConsole
                             logger.Info($"Product added - {product.ProductName}");
                         }
                     }
-                    else if (choice == "5")
+                    else if (choice == "6")
                     {
                         // edit product
                         var db = new NWConsole_48_TELContext();
@@ -102,7 +116,6 @@ namespace NorthwindConsole
                             string edit = "";
                             do
                             {
-                                Console.Clear();
                                 Console.ForegroundColor = ConsoleColor.DarkGray;
                                 Console.WriteLine(product);
                                 Console.ForegroundColor = ConsoleColor.White;
@@ -206,7 +219,7 @@ namespace NorthwindConsole
                             }
                             while(edit != "q");
                             db.EditProduct(product);
-                            logger.Info($"{product.ProductName} - id:{product.ProductId}; modified")
+                            logger.Info($"{product.ProductName} - id:{product.ProductId}; modified");
                         }
                     }
                     Console.WriteLine();
@@ -232,7 +245,6 @@ namespace NorthwindConsole
             Console.ForegroundColor = ConsoleColor.White;
             if (int.TryParse(Console.ReadLine(), out int CategoryId))
             {
-                Console.Clear();
                 Category category = db.Categories.FirstOrDefault(c => c.CategoryId == CategoryId);
                 if (category != null)
                     return category;
@@ -291,7 +303,6 @@ namespace NorthwindConsole
             Console.ForegroundColor = ConsoleColor.White;
             if (int.TryParse(Console.ReadLine(), out int SupplierId))
             {
-                Console.Clear();
                 Supplier supplier = db.Suppliers.FirstOrDefault(s => s.SupplierId == SupplierId);
                 if (supplier != null)
                     return supplier;
@@ -322,7 +333,6 @@ namespace NorthwindConsole
                 // generate selected product
                 if (int.TryParse(Console.ReadLine(), out int ProductId))
                 {
-                    Console.Clear();
                     Product product = db.Products.Where(p => p.CategoryId == category.CategoryId).Include("Supplier").FirstOrDefault(p => p.ProductId == ProductId);
                     if (product != null)
                         return product;
