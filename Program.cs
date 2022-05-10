@@ -28,6 +28,7 @@ namespace NorthwindConsole
                     Console.WriteLine("6) Display Specific Product");
                     Console.WriteLine("7) Add Product");
                     Console.WriteLine("8) Edit Product");
+                    Console.WriteLine("9) Remove Product");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -295,7 +296,30 @@ namespace NorthwindConsole
                             Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
-                    Console.WriteLine();
+                    else if (choice == "9")
+                    {
+                        // drop product
+                        var db = new NWConsole_48_TELContext();
+
+                        Product product = GetProduct(db);
+                        if(product != null){
+                            Console.WriteLine($"Do you wish to delete Product {product.ProductName} - Id:{product.ProductId}? (y/n)");
+                            Console.WriteLine("*Caution* Deleting selected product will result in the removal of entities from tables to prevent orphans");
+                            if(Console.ReadLine().ToLower() == "y")
+                            {
+                                db.DropProduct(product);
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                logger.Info($"{product.ProductName} Id:{product.ProductId} removed");
+                                Console.ForegroundColor = ConsoleColor.White;
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                logger.Info($"{product.ProductName} Id:{product.ProductId} not removed");
+                                Console.ForegroundColor = ConsoleColor.White;
+                            }
+                        }
+                    }
                 } while (choice.ToLower() != "q");
             }
             catch (Exception ex)
@@ -424,12 +448,14 @@ namespace NorthwindConsole
                 // generate selected product
                 if (int.TryParse(Console.ReadLine(), out int ProductId))
                 {
-                    Product product = db.Products.Where(p => p.CategoryId == category.CategoryId).Include("Supplier").FirstOrDefault(p => p.ProductId == ProductId);
+                    Product product = db.Products.Include("Supplier").Where(p => p.CategoryId == category.CategoryId).FirstOrDefault(p => p.ProductId == ProductId);
                     if (product != null)
+                    {
                         Console.ForegroundColor = ConsoleColor.Green;
                         logger.Info($"Product Id: {ProductId} selected");
                         Console.ForegroundColor = ConsoleColor.White;
                         return product;
+                    }
                 }
                 Console.ForegroundColor = ConsoleColor.Red;
                 logger.Error("Invalid ProductId");
