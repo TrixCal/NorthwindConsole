@@ -28,6 +28,11 @@ namespace NorthwindConsole.Model
         public short? ReorderLevel { get; set; }
         public bool Discontinued { get; set; }
 
+        public override string ToString()
+        {
+            return $"{this.ProductName}, id:{this.ProductId}\nCategory: {this.Category.CategoryName}\nSupplier: {this.Supplier.CompanyName}\nQuantity Per Unit: {this.QuantityPerUnit}\nUnit Price: {this.UnitPrice:C}\nUnits In Stock: {this.UnitsInStock}\nUnits In Order: {this.UnitsOnOrder}\nReorder Level: {this.ReorderLevel}\nDiscontinued: {this.Discontinued}";
+        }
+
         public virtual Category Category { get; set; }
         public virtual Supplier Supplier { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
