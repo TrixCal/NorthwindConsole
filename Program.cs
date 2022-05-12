@@ -23,12 +23,13 @@ namespace NorthwindConsole
                     Console.WriteLine("1) Display Categories");
                     Console.WriteLine("2) Add Category");
                     Console.WriteLine("3) Edit Category");
-                    Console.WriteLine("4) Display Specific Category and related products");
-                    Console.WriteLine("5) Display All Categories and related products");
-                    Console.WriteLine("6) Display Specific Product");
-                    Console.WriteLine("7) Add Product");
-                    Console.WriteLine("8) Edit Product");
-                    Console.WriteLine("9) Remove Product");
+                    Console.WriteLine("4) Remove Category");
+                    Console.WriteLine("5) Display Specific Category and related products");
+                    Console.WriteLine("6) Display All Categories and related products");
+                    Console.WriteLine("7) Display Specific Product");
+                    Console.WriteLine("8) Add Product");
+                    Console.WriteLine("9) Edit Product");
+                    Console.WriteLine("10) Remove Product");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -107,6 +108,33 @@ namespace NorthwindConsole
                     }
                     else if (choice == "4")
                     {
+                        // drop category
+                        var db = new NWConsole_48_TELContext();
+
+                        Category category = GetCategory(db);
+                        var relatedProducts = db.Products.Where(p => p.CategoryId == category.CategoryId).Include("OrderDetails");
+                        if(category != null)
+                        {
+                            Console.WriteLine($"Do you wish to delete Category {category.CategoryName} - Id:{category.CategoryId}? (y/n)");
+                            Console.WriteLine("*Caution* Deleting selected category will result in the removal of entities from related tables to prevent orphans");
+                            if(Console.ReadLine().ToLower() == "y")
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                logger.Info($"{relatedProducts.Count()} products deleted from category");
+                                db.DropCategory(category);
+                                logger.Info($"{category.CategoryName} Id:{category.CategoryId} removed");
+                                Console.ForegroundColor = ConsoleColor.White;
+                            }
+                            else
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                logger.Info($"{category.CategoryName} Id:{category.CategoryId} not removed");
+                                Console.ForegroundColor = ConsoleColor.White;
+                            }
+                        }
+                    }
+                    else if (choice == "5")
+                    {
                         // display products in category
                         var db = new NWConsole_48_TELContext();
 
@@ -128,7 +156,7 @@ namespace NorthwindConsole
                             Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
-                    else if (choice == "5")
+                    else if (choice == "6")
                     {
                         // display all categories and all related products
                         var db = new NWConsole_48_TELContext();
@@ -146,7 +174,7 @@ namespace NorthwindConsole
                         }
                         Console.ForegroundColor = ConsoleColor.White;
                     }
-                    else if (choice == "6")
+                    else if (choice == "7")
                     {
                         // display specific product
                         var db = new NWConsole_48_TELContext();
@@ -157,10 +185,9 @@ namespace NorthwindConsole
                             Console.ForegroundColor = ConsoleColor.DarkGray;
                             Console.WriteLine(product);
                             Console.ForegroundColor = ConsoleColor.White;
-                            Console.ReadKey();
                         }
                     }
-                    else if (choice == "7")
+                    else if (choice == "8")
                     {
                         // add product
                         var db = new NWConsole_48_TELContext();
@@ -174,7 +201,7 @@ namespace NorthwindConsole
                             Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
-                    else if (choice == "8")
+                    else if (choice == "9")
                     {
                         // edit product
                         var db = new NWConsole_48_TELContext();
@@ -296,7 +323,7 @@ namespace NorthwindConsole
                             Console.ForegroundColor = ConsoleColor.White;
                         }
                     }
-                    else if (choice == "9")
+                    else if (choice == "10")
                     {
                         // drop product
                         var db = new NWConsole_48_TELContext();
@@ -304,7 +331,7 @@ namespace NorthwindConsole
                         Product product = GetProduct(db);
                         if(product != null){
                             Console.WriteLine($"Do you wish to delete Product {product.ProductName} - Id:{product.ProductId}? (y/n)");
-                            Console.WriteLine("*Caution* Deleting selected product will result in the removal of entities from tables to prevent orphans");
+                            Console.WriteLine("*Caution* Deleting selected product will result in the removal of entities from related tables to prevent orphans");
                             if(Console.ReadLine().ToLower() == "y")
                             {
                                 db.DropProduct(product);
@@ -320,6 +347,7 @@ namespace NorthwindConsole
                             }
                         }
                     }
+                    Console.ReadKey();
                 } while (choice.ToLower() != "q");
             }
             catch (Exception ex)

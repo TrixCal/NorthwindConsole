@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +40,11 @@ namespace NorthwindConsole.Model
         public void EditCategory(Category UpdatedCategory){
             Category category = this.Categories.Find(UpdatedCategory.CategoryId);
             category = UpdatedCategory;
+            this.SaveChanges();
+        }
+
+        public void DropCategory(Category category){
+            this.Categories.Remove(category);
             this.SaveChanges();
         }
 
